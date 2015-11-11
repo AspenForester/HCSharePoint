@@ -1,0 +1,229 @@
+<Configuration>
+<ViewDefinitions>
+  <View>
+    <Name>HC.Sharepoint.List.sidv1</Name>
+    <ViewSelectedBy>
+      <TypeName>HC.Sharepoint.List.sidv1</TypeName>
+    </ViewSelectedBy>
+    <ListControl>
+      <ListEntries>
+        <ListEntry>
+          <ListItems>
+            <ListItem>
+              <PropertyName>Title</PropertyName>
+            </ListItem>
+            <ListItem>
+              <PropertyName>OS</PropertyName>
+            </ListItem>
+            <ListItem>
+              <PropertyName>CPUs</PropertyName>
+            </ListItem>
+            <ListItem>
+              <PropertyName>RAM</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>Storage</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>IPAddress</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>Cluster</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>PatchSchedule</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>Environment</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>IsPhysical</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>BudgetCode</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>LOB</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>RackLocation</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>Site</PropertyName>
+            </ListItem>
+            <ListItem>
+    	      <PropertyName>Notes</PropertyName>
+            </ListItem>
+            <ListItem>
+    	      <PropertyName>ServerLocalAdmin</PropertyName>
+            </ListItem>
+            <ListItem>
+              <PropertyName>Status</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>SerialNumber</PropertyName>
+            </ListItem>
+            <ListItem>
+    	      <PropertyName>ServerAdminEmail</PropertyName>
+            </ListItem>
+            <ListItem>
+      	      <PropertyName>ServerFunction</PropertyName>
+            </ListItem>
+	    <ListItem>
+      	      <PropertyName>ServerDescription</PropertyName>
+            </ListItem>
+	    <ListItem>
+      	      <PropertyName>Domain</PropertyName>
+            </ListItem>
+	    <ListItem>
+      	      <PropertyName>VApp</PropertyName>
+            </ListItem>
+	    <ListItem>
+      	      <PropertyName>FixedAsset</PropertyName>
+            </ListItem>
+	    <ListItem>
+      	      <PropertyName>Depreciates</PropertyName>
+            </ListItem>
+	    <ListItem>
+      	      <PropertyName>DeptNum</PropertyName>
+            </ListItem>
+	    <ListItem>
+      	      <PropertyName>Decommissioned</PropertyName>
+            </ListItem>
+          </ListItems>
+        </ListEntry>
+      </ListEntries>
+    </ListControl>
+  </View>
+  
+  <View>
+    <Name>HC.Sharepoint.List.newserverrequest</Name>
+    <ViewSelectedBy>
+      <TypeName>HC.Sharepoint.List.newserverrequest</TypeName>
+    </ViewSelectedBy>
+    <ListControl>
+      <ListEntries>
+        <ListEntry>
+          <ListItems>
+            <ListItem>
+              <PropertyName>Title</PropertyName>
+            </ListItem>
+            <ListItem>
+              <PropertyName>Requestor</PropertyName>
+            </ListItem>
+            <ListItem>
+              <PropertyName>Date_x0020_Submitted</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>Environment</PropertyName>
+            </ListItem>
+            <ListItem>
+	      <PropertyName>OS</PropertyName>
+            </ListItem>
+            <ListItem>
+              <PropertyName>System_x0020_Memory</PropertyName>
+            </ListItem>
+            <ListItem>
+              <PropertyName>CPUs</PropertyName>
+            </ListItem>
+            <ListItem>
+              <PropertyName>Patch_x0020_Date</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Storage</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Reason_x0020_for_x0020_Denial</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Status</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Approved_x003f_</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>ItemID</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>ReqIDEnv</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>UserID</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>ReqDate</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Non_x002d_Standard_x0020_Notes</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Target_x0020_Date0</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>BuildNotes</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Alias</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>ServerRole</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Domain</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>LOB</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>ServerAdminEmail</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Approver</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>Builder</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>IPAddress</PropertyName>
+</ListItem>
+<ListItem>
+<PropertyName>VMCluster</PropertyName>
+</ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+
+<View>
+<Name>HC.Sharepoint.List.testlist</Name>
+<ViewSelectedBy>
+      <TypeName>HC.Sharepoint.List.testlist</TypeName>
+</ViewSelectedBy>
+<ListControl>
+  <ListEntries>
+    <ListEntry>
+      <ListItems>
+<ListItem>
+      	      <PropertyName>Title</PropertyName>
+</ListItem>
+<ListItem>
+      	      <PropertyName>YesNo</PropertyName>
+</ListItem>
+<ListItem>
+      	      <PropertyName>Num</PropertyName>
+</ListItem>
+<ListItem>
+      	      <PropertyName>SingleLine</PropertyName>
+</ListItem>
+<ListItem>
+      	      <PropertyName>DateTime</PropertyName>
+</ListItem>                      
+</ListItems>
+</ListEntry>
+</ListEntries>
+</ListControl>
+</View>
+
+</ViewDefinitions>
+</Configuration>

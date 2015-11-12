@@ -63,7 +63,7 @@ function Get-SPListItem
         $List = $ClientContext.Web.Lists.GetByTitle($listname)
  
         If ($SizeLimit -ne 0) {
-            Write-Verbose 'Only retrieving {0} records' -f $SizeLimit
+            Write-Verbose ('Only retrieving {0} records' -f $SizeLimit)
             $Query = [Microsoft.SharePoint.Client.CamlQuery]::CreateAllItemsQuery($SizeLimit)
         } else {
             Write-Verbose "Retrieving all records"
@@ -91,16 +91,15 @@ function Get-SPListItem
 
         foreach ($item in $Items) 
             { 
-            $obj = new-object -TypeName psobject 
+            $obj = New-Object -TypeName psobject 
             # Convert the hash table / dictionary object to a custom object
             foreach ($i in $item.FieldValues) 
                 { 
-                
                 foreach ($key in $i.keys) 
                     {
                     $obj | Add-Member -MemberType NoteProperty -Name $key -Value $i.Item($key)
-                    }                
-                } 
+                    }
+                }
             $obj.psobject.TypeNames.Insert(0,"HC.Sharepoint.List.$listname")
             $obj
 			}
@@ -109,7 +108,6 @@ function Get-SPListItem
     {
     }
 }
-
 
 function Update-SPListItem
 {
@@ -181,7 +179,7 @@ function Update-SPListItem
 
         # Object representing a record to update
         [Parameter(Mandatory=$true,
-        ParameterSetName="Multi" )]
+				   ParameterSetName="Multi" )]
         [pscustomobject]
         $fields
     )
@@ -229,13 +227,13 @@ function Update-SPListItem
             # Sharepoint is case sensitive - correct the case mismatch
             If (!($Columns -ccontains $key))
             {
-                Write-Verbose "Correcting field input: $key"
+                Write-Verbose ("Correcting field input: {0}" -f $key)
                 # Correct the field's (key's) capitalization
                 $key = $Columns | Where-Object {$_ -eq $key}
-                Write-Verbose "Corrected: $key"
+                Write-Verbose ("Corrected: {0}" -f $key)
             }
              
-            Write-Verbose "Updating Record $id, Field $key with $value"    
+            Write-Verbose ("Updating Record {0}, Field {1} with {2}" -f $id, $key, $value)   
             $listitem[$key] = $hash[$key]
         }
 
@@ -247,7 +245,7 @@ function Update-SPListItem
         # Commit the changes back to the Sharepoint server
         if ($pscmdlet.ShouldProcess("Item $id", "Update"))
         {
-            Write-Verbose "Committing update to Record $id"
+            Write-Verbose ("Committing update to Record {0}" -f $id)
             $ClientContext.ExecuteQuery()
         }
     }
@@ -307,7 +305,7 @@ function Remove-SPListItem
     Process
     {
         $ListItem = $list.getItemById($id)
-        Write-Verbose "Removing record $id"
+        Write-Verbose ("Removing record {0}" -f $id)
         if ($PSCmdlet.ShouldProcess($id,'Remove Item')){
             $ListItem.DeleteObject()
         }
@@ -381,16 +379,16 @@ function New-SPListItem
         
             foreach($field in $fields){
                 If (!($Columns -ccontains $field)){
-                    Write-Verbose "Correcting field input: $field"
+                    Write-Verbose ("Correcting field input: {0}" -f $field)
                     # Correct the field's capitalization
                     $field = $Columns | Where-Object {$_ -eq $field}
-                    Write-Verbose "Corrected: $field"
+                    Write-Verbose ("Corrected: {0}" -f $field)
                 }
                 if ($record_item.$field -ne ""){
                     $NewItem[$field] = $record_item.$field
                 }
             }
-            Write-Verbose "Adding new record to list $listname"
+            Write-Verbose ("Adding new record to list {0}" -f $listname)
             $NewItem.Update()
         }
     }
@@ -451,7 +449,7 @@ Function Get-SPListField
        
     $List = $ClientContext.Web.Lists.GetByTitle($listname)
 
-    Write-Verbose "Retrieving the fields for list $listname"
+    Write-Verbose ("Retrieving the fields for list {0}" -f $listname)
     $ClientContext.Load($List.Fields)
     $ClientContext.ExecuteQuery()
 

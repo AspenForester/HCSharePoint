@@ -43,7 +43,7 @@ function Get-SPListItem
         [string]
         $listname,
 
-        #Number of items to return, 100 by default
+        #Number of items to return
         [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
                    Position=2)]
@@ -89,15 +89,15 @@ function Get-SPListItem
 			$ErrorActionPreference = "Continue"
 			}
 
-        foreach ($Item in $Items) 
+        foreach ($item in $Items) 
             { 
             $obj = New-Object -TypeName psobject 
             # Convert the hash table / dictionary object to a custom object
-            foreach ($i in $Item.FieldValues) 
+            foreach ($i in $item.FieldValues) 
                 { 
                 foreach ($key in $i.keys) 
                     {
-                    Add-Member -InputObject $obj -NotePropertyName $key -NotePropertyValue $i.Item($key)
+                    $obj | Add-Member -MemberType NoteProperty -Name $key -Value $i.Item($key)
                     }
                 }
             $obj.psobject.TypeNames.Insert(0,"HC.Sharepoint.List.$listname")
@@ -186,7 +186,7 @@ function Update-SPListItem
 
     Begin
     {
-        # Get the _Case Sensitive_ fields for this list
+        # Get the fields for this list
         $Columns = Get-SPListField -uri $uri -listname $listname        
         
         $clientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
@@ -195,21 +195,14 @@ function Update-SPListItem
     }
     Process
     {
+
         $hash = @{}
         switch ($pscmdlet.ParameterSetName){
             "Multi" {
                 #Make sure we have the record ID
                 if (!($id)) # We didn't get the ID as a stand alone parameter
                 {
-                    # Test for the existence of an id property in the input object
-					if (-not $fields.psobject.properties -contains "id")
-						{
-						throw "No ID value was provided, unable to determine which record to update!"
-						}
-					else
-						{
-						$id = $fields.id 
-						}
+                    $id = $fields.id # This needs some more error handling, in case we didn't get the id in the object!
                 } 
 
                 foreach ($pair in $fields.psobject.properties) { 
@@ -383,7 +376,7 @@ function New-SPListItem
     )
     Begin
     {
-        # Get the _Case Sensitive_ fields for this list
+        # Get the fields for this list
         $Columns = Get-SPListField -uri $uri -listname $listname 
         
         $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)

@@ -12,7 +12,7 @@
 RootModule = 'hcsharepoint.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.1.0.0'
+ModuleVersion = '1.1.1.0'
 
 # ID used to uniquely identify this module
 GUID = 'e381041c-4df3-4482-9419-a6b80a816434'

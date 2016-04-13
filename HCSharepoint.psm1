@@ -22,7 +22,7 @@ function Get-SPListItem
 .PARAMETER listname
     Name of the sharepoint list to access. In the uri "https://my.sharepoint.local/mysite/lists/mylist", "mylist" is the name of the list.
 .PARAMETER SizeLimit
-    The Number of records to return.  Default is 100.  Set SizeLimit to "0" to return all records.
+    The Number of records to return.  Default is "0" to return all records.
 .LINK
     http://msdn.microsoft.com/en-us/library/office/fp179912(v=office.15).aspx#BasicOps_SPListItemTasks
 #>
@@ -43,7 +43,7 @@ function Get-SPListItem
         [string]
         $listname,
 
-        #Number of items to return, 100 by default
+        #Number of items to return
         [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
                    Position=2)]
@@ -333,6 +333,16 @@ function New-SPListItem
     New-SPListItem takes a sharepoint site and the name of a list, plus an object mapping the field names and values, and creates a new 
     list record in the specified list.
 .EXAMPLE
+	$RecordObject = [pscustomobject]@{
+		PatchSchedule = "3rdTues2000"
+		Environment   = "Development (Sandbox)"
+		IsPhysical    = $true
+		RAM           = 2
+		Storage       = 26
+		CPUs          = 2
+		Cluster       = "DEVCluster"
+		Title         = "hsdiamondvm001"
+		}
     New-SPListItem -uri "https://my.sharepoint.local" -listname 'mylist' -record $RecordObject
 .EXAMPLE
     $RecordObject | New-SPListItem -uri "https://my.sharepoint.local" -listname 'mylist'

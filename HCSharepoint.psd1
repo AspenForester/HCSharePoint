@@ -66,7 +66,7 @@ FormatsToProcess = @('hcsharepoint.Format.ps1xml')
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = '*'
+FunctionsToExport = 'Get-SPListItem','Update-SPListItem','Remove-SPListItem','New-SPListItem','Get-SPListField'
 
 # Cmdlets to export from this module
 CmdletsToExport = '*'

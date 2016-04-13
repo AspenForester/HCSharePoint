@@ -473,8 +473,8 @@ Function Get-SPListField
     $List.Fields.InternalName | Where-Object {$exclude -NotContains $_}
 }
 
-Export-ModuleMember -Function Get-SPListItem
-Export-ModuleMember -Function Update-SPListItem
-Export-ModuleMember -Function Remove-SPListItem
-Export-ModuleMember -Function New-SPListItem
-Export-ModuleMember -Function Get-SPListField
+#Export-ModuleMember -Function Get-SPListItem
+#Export-ModuleMember -Function Update-SPListItem
+#Export-ModuleMember -Function Remove-SPListItem
+#Export-ModuleMember -Function New-SPListItem
+#Export-ModuleMember -Function Get-SPListField

@@ -258,7 +258,6 @@ function Update-SPListItem
     }
 }
 
-
 function Remove-SPListItem
 {
 <#
@@ -323,7 +322,6 @@ function Remove-SPListItem
     }
 }
 
-
 function New-SPListItem
 {
 <#
@@ -375,6 +373,7 @@ function New-SPListItem
         [Parameter(Mandatory=$true,
                    ValueFromPipeline=$true,
                    Position=2)]
+		[ValidateScript({$_.gettype().Name -eq "PSCustomObject"})]
         [pscustomobject]
         $record
     )
@@ -394,17 +393,26 @@ function New-SPListItem
             $ItemCreateInfo = New-Object -TypeName Microsoft.SharePoint.Client.ListItemCreationInformation
             $NewItem = $list.AddItem($ItemCreateInfo)
         
-            foreach($field in $fields){
-                If (!($Columns -ccontains $field)){
-                    Write-Verbose ("Correcting field input: {0}" -f $field)
-                    # Correct the field's capitalization
-                    $field = $Columns | Where-Object {$_ -eq $field}
-                    Write-Verbose ("Corrected: {0}" -f $field)
-                }
-                if ($record_item.$field -ne ""){
-                    $NewItem[$field] = $record_item.$field
-                }
-            }
+            foreach($field in $fields)
+				{
+				If ($Columns -contains $field)
+					{
+					If (!($Columns -ccontains $field)){
+						Write-Verbose ("Correcting field input: {0}" -f $field)
+						# Correct the field's capitalization
+						$field = $Columns | Where-Object {$_ -eq $field}
+						Write-Verbose ("Corrected: {0}" -f $field)
+					}
+					if ($record_item.$field -ne "")
+						{
+						$NewItem[$field] = $record_item.$field
+						}
+					}
+				else
+					{
+					Throw ("{0} is not a field in this list!" -f $field)
+					}
+				}
             Write-Verbose ("Adding new record to list {0}" -f $listname)
             $NewItem.Update()
         }

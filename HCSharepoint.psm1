@@ -10,10 +10,10 @@ function Get-SPListItem
    The list items are returned as a collection of a custom object type, HC.Sharepoint.List.<name of list>
 .EXAMPLE
    $mylist = Get-SPListItem -uri "https://team.hennepin.us/vex" -list "testlist"
-   Returns the first 100 items in the list
+   Returns all items in the target list
 .EXAMPLE
    $mylist = Get-SPListItem -uri "https://team.hennepin.us/vex" -list "testlist" -SizeLimit 27
-   Returs the first 27 records as specified by the SizeLimit Parameter
+   Returns the first 27 records as specified by the SizeLimit Parameter
 .EXAMPLE
    $mylist = Get-SPListItem -uri "https://team.hennepin.us/vex" -list "testlist" -SizeLimit 0
    Returns all records in a list.
@@ -395,14 +395,15 @@ function New-SPListItem
         
             foreach($field in $fields)
 				{
-				If ($Columns -contains $field)
+				If ($Columns -contains $field) # Does the input field match ANY of the list's fields?
 					{
-					If (!($Columns -ccontains $field)){
+					If (!($Columns -ccontains $field)) # Does the input field match case sensitively?
+						{
 						Write-Verbose ("Correcting field input: {0}" -f $field)
 						# Correct the field's capitalization
 						$field = $Columns | Where-Object {$_ -eq $field}
 						Write-Verbose ("Corrected: {0}" -f $field)
-					}
+						}
 					if ($record_item.$field -ne "")
 						{
 						$NewItem[$field] = $record_item.$field

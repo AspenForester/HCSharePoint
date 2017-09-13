@@ -34,13 +34,11 @@ function New-SPListItem
     (
         # URI of the Sharepoint site.
         [Parameter(Mandatory = $true,
-            ValueFromPipelineByPropertyName = $true,
             Position = 0)]
         [string]
         $uri,
         # Name of the List we are adding a record to
         [Parameter(Mandatory = $true,
-            ValueFromPipelineByPropertyName = $true,
             Position = 1)]
         [string]
         $listname,

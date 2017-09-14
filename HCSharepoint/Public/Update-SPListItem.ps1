@@ -10,6 +10,9 @@
   .EXAMPLE
     $collection = import-csv my-list-changes.csv
     Update-SPListItem -uri "https://my.sharepoint.local" -listname 'mylist' -fields $collection
+  .EXAMPLE
+    $collection = import-csv my-list-changes.csv
+    $collection | Update-SPListItem -uri "https://my.sharepoint.local" -listname 'mylist'  
   .PARAMETER uri
     URI of the the sharepoint site to access.  Example: https://my.sharepoint.local/mysite
   .PARAMETER listname
@@ -68,7 +71,7 @@ function Update-SPListItem
 
         # Object representing a record to update
         [Parameter(Mandatory = $true,
-        ValueFromPipeline = $true,
+            ValueFromPipeline = $true,
             ParameterSetName = "Multi" )]
         [PSCustomObject]
         $fields

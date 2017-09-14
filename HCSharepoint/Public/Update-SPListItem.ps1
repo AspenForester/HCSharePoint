@@ -27,6 +27,8 @@
     A PSCustomObject representing one complete item from the list, which has had it's properties updated to reflect the desired change.
   .LINK
     http://msdn.microsoft.com/en-us/library/office/fp179912(v=office.15).aspx#BasicOps_SPListItemTasks
+  .NOTES
+    TODO: Pull the commit out of the End Block
 #>
 function Update-SPListItem
 {
@@ -88,7 +90,7 @@ function Update-SPListItem
     }
     Process
     {
-        Write-Verbose "Parameter Set $($pscmdlet.ParameterSetName)" -Verbose
+        Write-Verbose "Parameter Set $($pscmdlet.ParameterSetName)"
         $hash = @{}
         switch ($pscmdlet.ParameterSetName)
         {

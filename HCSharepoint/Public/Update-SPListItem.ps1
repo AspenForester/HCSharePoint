@@ -9,7 +9,7 @@
     Update-SPListItem -uri "https://my.sharepoint.local" -listname 'mylist' -id 27 -field 'ipaddress' -value '127.0.0.1'
   .EXAMPLE
     $collection = import-csv my-list-changes.csv
-    $collection | Update-SPListItem -uri "https://my.sharepoint.local" -listname 'mylist'
+    Update-SPListItem -uri "https://my.sharepoint.local" -listname 'mylist' -fields $collection
   .PARAMETER uri
     URI of the the sharepoint site to access.  Example: https://my.sharepoint.local/mysite
   .PARAMETER listname
@@ -29,7 +29,7 @@ function Update-SPListItem
 {
 
     [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = "Single")]
+        DefaultParameterSetName = "Multi")]
     
     Param
     (
@@ -45,16 +45,15 @@ function Update-SPListItem
         [string]
         $listname,
 
-        #record ID
+        # Record ID
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
             ParameterSetName = "Single",
             Position = 2)]
-        [Parameter(ParameterSetName = "Multi" )]
         [int]
         $id,
 
-        #Name of Field to update
+        # Name of Field to update
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
             ParameterSetName = "Single")]
@@ -69,8 +68,9 @@ function Update-SPListItem
 
         # Object representing a record to update
         [Parameter(Mandatory = $true,
+        ValueFromPipeline = $true,
             ParameterSetName = "Multi" )]
-        [pscustomobject]
+        [PSCustomObject]
         $fields
     )
 
@@ -85,6 +85,7 @@ function Update-SPListItem
     }
     Process
     {
+        Write-Verbose "Parameter Set $($pscmdlet.ParameterSetName)" -Verbose
         $hash = @{}
         switch ($pscmdlet.ParameterSetName)
         {

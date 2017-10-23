@@ -1,6 +1,9 @@
 # Introduction
 The module provides PowerShell commands to access Sharepoint lists.
 
+# Is this a good idea?
+The text here is a little dry.  JB is trying his best.
+
 # Getting Started
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
 1.	Installation process

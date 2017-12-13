@@ -13,12 +13,18 @@
   .EXAMPLE
     $mylist = Get-SPListItem -uri "https://team.hennepin.us/vex" -list "testlist" -SizeLimit 0
     Returns all records in a list.
+  .EXAMPLE
+    $Creds = Get-Credential mydomain\myuser
+    $mylist = Get-SPListItem -uri "https://team.mydomain.local/vex" -list "testlist" -Credential $creds
+    Uses the provided credential to authenticate with the SharePoint server
   .PARAMETER uri
     URI of the the sharepoint site to access.  Example: https://my.sharepoint.local/mysite
   .PARAMETER listname
     Name of the sharepoint list to access. In the uri "https://my.sharepoint.local/mysite/lists/mylist", "mylist" is the name of the list.
   .PARAMETER SizeLimit
     The Number of records to return.  Default is "0" to return all records.
+  .PARAMETER Credential
+    Credential to authenticate to the SharePoint server.  
   .LINK
     http://msdn.microsoft.com/en-us/library/office/fp179912(v=office.15).aspx#BasicOps_SPListItemTasks
 #>
@@ -70,9 +76,6 @@ function Get-SPListItem
 
         # Get the List
         $List = $ClientContext.Web.Lists.GetByTitle($listname)
-
-        # At this point I can see how many records there are!
-        # $Count = $list.itemcount
  
         If ($SizeLimit -ne 0)
         {

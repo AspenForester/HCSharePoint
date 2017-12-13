@@ -46,7 +46,13 @@ function Get-SPListItem
             ValueFromPipelineByPropertyName = $true,
             Position = 2)]
         [int]
-        $SizeLimit = 0
+        $SizeLimit = 0,
+
+        # Credentials
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential = [System.Management.Automation.PSCredential]::Empty 
     )
 
     Begin
@@ -57,8 +63,10 @@ function Get-SPListItem
         # Connect to the Sharepoint Server
         $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
 
-        # Credentials! And it appears to be expecting a Credential Object!!
-        # $ClientContext.Credentials = New-Object System.Net.NetworkCredential($loginname, $pwd)
+       if ($PSBoundParameters['Credential'])
+       {
+           $ClientContext.Credentials = $Credential
+       }
 
         # Get the List
         $List = $ClientContext.Web.Lists.GetByTitle($listname)

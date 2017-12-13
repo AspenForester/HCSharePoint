@@ -57,8 +57,14 @@ function Get-SPListItem
         # Connect to the Sharepoint Server
         $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
 
+        # Credentials! And it appears to be expecting a Credential Object!!
+        # $ClientContext.Credentials = New-Object System.Net.NetworkCredential($loginname, $pwd)
+
         # Get the List
         $List = $ClientContext.Web.Lists.GetByTitle($listname)
+
+        # At this point I can see how many records there are!
+        # $Count = $list.itemcount
  
         If ($SizeLimit -ne 0)
         {
@@ -70,7 +76,10 @@ function Get-SPListItem
             Write-Verbose "Retrieving all records"
             $Query = [Microsoft.SharePoint.Client.CamlQuery]::CreateAllItemsQuery()
         }
-		
+        <#
+        $Query = New-Object Microsoft.SharePoint.Client.CamlQuery
+        $Query.ViewXml = "<query><where><eq><Fieldref Name='ID'/><Value Type='Number'>1</value></eq></where></query>"
+		#>
         $Items = $List.GetItems($Query)
 
         $ClientContext.Load($Items)
@@ -92,6 +101,7 @@ function Get-SPListItem
 
         foreach ($Item in $Items) 
         { 
+            <#
             $obj = New-Object -TypeName psobject 
             # Convert the hash table / dictionary object to a custom object
             foreach ($i in $Item.FieldValues) 
@@ -102,6 +112,8 @@ function Get-SPListItem
                 }
             }
             $obj.psobject.TypeNames.Insert(0, "HC.Sharepoint.List.$listname")
+            #>
+            $obj = [pscustomobject]([hashtable]$Item.FieldValues)
             $obj
         }
     }

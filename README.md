@@ -20,6 +20,10 @@ TODO: Explain how other users and developers can contribute to make your code be
 # References
 https://social.technet.microsoft.com/wiki/contents/articles/29518.csom-sharepoint-powershell-reference-and-example-codes.aspx
 
+# Versions
+1.1.2.0 - This is the version the Pester Tests were originated with.  Updates can be done with a pscustom object or with id, column, value trio.
+1.1.3.0 - Revised the processing of the Dictionary objects we get back from Sharepoint into pscustomobjects to greatly improve efficiency
+1.1.4.0 - Addition of credential parameter
 
 If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
 - [ASP.NET Core](https://github.com/aspnet/Home)

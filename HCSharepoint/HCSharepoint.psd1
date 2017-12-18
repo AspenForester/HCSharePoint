@@ -27,7 +27,7 @@ CompanyName = 'Hennepin County'
 Copyright = '(c) 2014 Hennepin County. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'Enables interaction with SharePoint Lists'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'

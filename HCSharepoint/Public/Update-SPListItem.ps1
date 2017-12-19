@@ -25,6 +25,8 @@
     The new value for the field the cmdlet is updating.
   .PARAMETER fields
     A PSCustomObject representing one complete item from the list, which has had it's properties updated to reflect the desired change.
+  .PARAMETER Credential
+    Credential to authenticate to the SharePoint server.  
   .LINK
     http://msdn.microsoft.com/en-us/library/office/fp179912(v=office.15).aspx#BasicOps_SPListItemTasks
   .NOTES
@@ -76,7 +78,13 @@ function Update-SPListItem
             ValueFromPipeline = $true,
             ParameterSetName = "Multi" )]
         [PSCustomObject]
-        $fields
+        $fields,
+
+        # Credentials
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential = [System.Management.Automation.PSCredential]::Empty 
     )
 
     Begin
@@ -85,6 +93,12 @@ function Update-SPListItem
         $Columns = Get-SPListField -uri $uri -listname $listname        
         
         $clientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
+
+        if ($PSBoundParameters['Credential'])
+        {
+            $ClientContext.Credentials = $Credential
+        }
+
         $list = $ClientContext.Web.Lists.GetByTitle($listname)
 
     }

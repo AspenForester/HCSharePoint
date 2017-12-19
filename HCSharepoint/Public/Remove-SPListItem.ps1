@@ -12,6 +12,8 @@
     Name of the sharepoint list to access. In the uri "https://my.sharepoint.local/mysite/lists/mylist", "mylist" is the name of the list.
   .PARAMETER id
     Sharepoint record id to delete.
+  .PARAMETER Credential
+    Credential to authenticate to the SharePoint server.  
   .LINK
     http://msdn.microsoft.com/en-us/library/office/fp179912(v=office.15).aspx#BasicOps_SPListItemTasks
 #>
@@ -39,7 +41,13 @@ function Remove-SPListItem
             ValueFromPipeline = $true,
             Position = 2)]
         [int]
-        $id
+        $id,
+
+        # Credentials
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential = [System.Management.Automation.PSCredential]::Empty 
     )
     Begin
     {
@@ -47,6 +55,12 @@ function Remove-SPListItem
         #Add-SPCSOM
         
         $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
+
+        if ($PSBoundParameters['Credential'])
+        {
+            $ClientContext.Credentials = $Credential
+        }
+
         $list = $ClientContext.Web.Lists.GetByTitle($listname)
     }
     Process

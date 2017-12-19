@@ -9,6 +9,8 @@
     URI of the the sharepoint site to access.  Example: https://my.sharepoint.local/mysite
   .PARAMETER listname
     Name of the sharepoint list to access. In the uri "https://my.sharepoint.local/mysite/lists/mylist", "mylist" is the name of the list.
+  .PARAMETER Credential
+    Credential to authenticate to the SharePoint server.  
   .LINK
     http://msdn.microsoft.com/en-us/library/office/fp179912(v=office.15).aspx#BasicOps_SPListItemTasks
 #>
@@ -27,7 +29,13 @@ Function Get-SPListField
         [Parameter(Mandatory = $true,
             Position = 1)]
         [string]
-        $listname
+        $listname,
+
+        # Credentials
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential = [System.Management.Automation.PSCredential]::Empty 
     )
 
     # These are the Sharepoint common fields, someone adding a record would not want to attempt to write to one of these.
@@ -45,6 +53,11 @@ Function Get-SPListField
         "AppEditor")
 
     $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
+
+    if ($PSBoundParameters['Credential'])
+       {
+           $ClientContext.Credentials = $Credential
+       }
        
     $List = $ClientContext.Web.Lists.GetByTitle($listname)
 

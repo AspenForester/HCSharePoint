@@ -87,10 +87,7 @@ function Get-SPListItem
             Write-Verbose "Retrieving all records"
             $Query = [Microsoft.SharePoint.Client.CamlQuery]::CreateAllItemsQuery()
         }
-        <#
-        $Query = New-Object Microsoft.SharePoint.Client.CamlQuery
-        $Query.ViewXml = "<query><where><eq><Fieldref Name='ID'/><Value Type='Number'>1</value></eq></where></query>"
-		#>
+		
         $Items = $List.GetItems($Query)
 
         $ClientContext.Load($Items)
@@ -125,6 +122,7 @@ function Get-SPListItem
             $obj.psobject.TypeNames.Insert(0, "HC.Sharepoint.List.$listname")
             #>
             $obj = [pscustomobject]([hashtable]$Item.FieldValues)
+            $obj.psobject.TypeNames.Insert(0, "HC.Sharepoint.List.$listname")
             $obj
         }
     }

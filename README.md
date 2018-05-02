@@ -23,9 +23,10 @@ https://github.com/SharePoint/PnP-PowerShell
 https://joshmccarty.com/a-caml-query-quick-reference/
 
 # Versions
-1.1.2.0 - This is the version the Pester Tests were originated with.  Updates can be done with a pscustom object or with id, column, value trio.
-1.1.3.0 - Revised the processing of the Dictionary objects we get back from Sharepoint into pscustomobjects to greatly improve efficiency
-1.1.4.0 - Addition of credential parameter
+1.1.2.0 - This is the version the Pester Tests were originated with.  Updates can be done with a pscustom object or with id, column, value trio.  
+1.1.3.0 - Revised the processing of the Dictionary objects we get back from Sharepoint into pscustomobjects to greatly improve efficiency.  
+1.1.4.0 - Addition of credential parameter.  
+1.1.5.0 - Sanitized the code for public consumption.  
 
 # ToDo
 - Add a query option.  We now have the syntax for querying figured out in order to be able to document it

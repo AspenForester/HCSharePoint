@@ -12,7 +12,7 @@
 RootModule = 'hcsharepoint.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.1.4.0'
+ModuleVersion = '1.1.5.0'
 
 # ID used to uniquely identify this module
 GUID = 'e381041c-4df3-4482-9419-a6b80a816434'
@@ -24,7 +24,7 @@ Author = 'JB Lewis'
 CompanyName = 'Hennepin County'
 
 # Copyright statement for this module
-Copyright = '(c) 2014 Hennepin County. All rights reserved.'
+Copyright = '(c) 2014 Hennepin County. All rights reserved. MIT License'
 
 # Description of the functionality provided by this module
 Description = 'Enables interaction with SharePoint Lists'
@@ -51,7 +51,7 @@ PowerShellVersion = '3.0'
 # RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @('Microsoft.SharePoint.Client.dll','Microsoft.SharePoint.Client.Runtime.dll')
+RequiredAssemblies = @('bin\Microsoft.SharePoint.Client.dll','bin\Microsoft.SharePoint.Client.Runtime.dll')
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 #ScriptsToProcess = @()

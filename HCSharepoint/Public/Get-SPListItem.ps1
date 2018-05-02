@@ -5,17 +5,17 @@
     This function returns the contents of a specified sharepoint list.  
     The list items are returned as a collection of a custom object type, HC.Sharepoint.List.<name of list>
   .EXAMPLE
-    $mylist = Get-SPListItem -uri "https://team.hennepin.us/vex" -list "testlist"
+    $mylist = Get-SPListItem -uri "https://my.sharepoint.local/mysite" -list "testlist"
     Returns all records in a list.
   .EXAMPLE
-    $mylist = Get-SPListItem -uri "https://team.hennepin.us/vex" -list "testlist" -SizeLimit 27
+    $mylist = Get-SPListItem -uri "https://my.sharepoint.local/mysite" -list "testlist" -SizeLimit 27
     Returs the first 27 records as specified by the SizeLimit Parameter
   .EXAMPLE
-    $mylist = Get-SPListItem -uri "https://team.hennepin.us/vex" -list "testlist" -SizeLimit 0
+    $mylist = Get-SPListItem -uri "https://my.sharepoint.local/mysite" -list "testlist" -SizeLimit 0
     Returns all records in a list.
   .EXAMPLE
     $Creds = Get-Credential mydomain\myuser
-    $mylist = Get-SPListItem -uri "https://team.mydomain.local/vex" -list "testlist" -Credential $creds
+    $mylist = Get-SPListItem -uri "https://team.mydomain.local/mysite" -list "testlist" -Credential $creds
     Uses the provided credential to authenticate with the SharePoint server
   .PARAMETER uri
     URI of the the sharepoint site to access.  Example: https://my.sharepoint.local/mysite
@@ -71,7 +71,7 @@ function Get-SPListItem
 
        if ($PSBoundParameters['Credential'])
        {
-           $ClientContext.Credentials = $Credential
+           $ClientContext.Credentials = New-Object System.Net.NetworkCredential($Credential.Username, $Credential.password) 
        }
 
         # Get the List

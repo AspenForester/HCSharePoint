@@ -6,6 +6,8 @@
     The deletes are committed once all IDs are processed.
   .EXAMPLE
     Remove-SPListItem -uri "https://team.hennepin.us/vex" -list "testlist" -id 14
+
+    Removes the list item with ID 14 from the list.
   .PARAMETER uri
     URI of the the sharepoint site to access.  Example: https://my.sharepoint.local/mysite
   .PARAMETER listname

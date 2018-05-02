@@ -4,7 +4,7 @@
   .DESCRIPTION
     Takes a site URL and a list name and returns a collection of strings representing the fields in the list.
   .EXAMPLE
-    Get-SPListField -uri "https://team.hennepin.us/vex" -list "testlist"
+    Get-SPListField -uri "https://my.sharepoint.local/mysite" -list "testlist"
   .PARAMETER uri
     URI of the the sharepoint site to access.  Example: https://my.sharepoint.local/mysite
   .PARAMETER listname

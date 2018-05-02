@@ -105,7 +105,7 @@ function Update-SPListItem
     Process
     {
         Write-Verbose "Parameter Set $($pscmdlet.ParameterSetName)"
-        $hash = @{}
+        
         switch ($pscmdlet.ParameterSetName)
         {
             "Multi"
@@ -123,7 +123,7 @@ function Update-SPListItem
                         $id = $fields.id 
                     }
                 } 
-
+                $hash = @{}
                 foreach ($pair in $fields.psobject.properties)
                 { 
                     # Only include the user Columns in the hash table
@@ -135,7 +135,7 @@ function Update-SPListItem
             }
             "Single"
             {
-                $hash[$field] = $value
+                $hash = @{$field = $value}
             }
         }
 

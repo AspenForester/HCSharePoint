@@ -18,9 +18,9 @@ TODO: Describe and show how to build your code and run the tests.
 TODO: Explain how other users and developers can contribute to make your code better. 
 
 # References
-https://social.technet.microsoft.com/wiki/contents/articles/29518.csom-sharepoint-powershell-reference-and-example-codes.aspx
-https://github.com/SharePoint/PnP-PowerShell
-https://joshmccarty.com/a-caml-query-quick-reference/
+https://social.technet.microsoft.com/wiki/contents/articles/29518.csom-sharepoint-powershell-reference-and-example-codes.aspx  
+https://github.com/SharePoint/PnP-PowerShell  
+https://joshmccarty.com/a-caml-query-quick-reference/  
 
 # Versions
 1.1.2.0 - This is the version the Pester Tests were originated with.  Updates can be done with a pscustom object or with id, column, value trio.  

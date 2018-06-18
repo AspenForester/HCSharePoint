@@ -39,7 +39,7 @@ Function Get-SPListField
     )
 
     # These are the Sharepoint common fields, someone adding a record would not want to attempt to write to one of these.
-    $exclude = ("ContentTypeId", "_ModerationComments", "File_x0020_Type", "LinkTitleNoMenu",
+    $exclude = ("ContentVersion","ContentTypeId", "_ModerationComments", "File_x0020_Type", "LinkTitleNoMenu",
         "LinkTitle", "LinkTitle2", "Author", "Editor", "Modified", "Created", "ID", "ContentType",
         "_HasCopyDestinations", "_CopySource", "owshiddenversion", "WorkflowVersion",
         "_UIVersion", "_UIVersionString", "Attachments", "_ModerationStatus", "Edit",
@@ -50,7 +50,7 @@ Function Get-SPListField
         "_EditMenuTableStart2", "_EditMenuTableEnd", "LinkFilenameNoMenu", "LinkFilename",
         "LinkFilename2", "DocIcon", "ServerUrl", "EncodedAbsUrl", "BaseName", "MetaInfo",
         "_Level", "_IsCurrentVersion", "ItemChildCount", "FolderChildCount", "AppAuthor",
-        "AppEditor")
+        "AppEditor","Restricted")
 
     $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
 

@@ -44,7 +44,7 @@ InModuleScope "HCSharepoint" {
         Context "Example 1: Get the user defined fields of the list" {
             $fields = Get-SPListField -uri $URI -list $ListName
 
-            It 'returns 4 fields' {
+            It 'returns 5 fields' {
                 $fields.count | should be 5
             }
             it 'First field is "Title"' {

@@ -29,6 +29,7 @@ https://joshmccarty.com/a-caml-query-quick-reference/
 1.1.5.0 - Sanitized the code for public consumption.  
 
 # ToDo
+- Account for ADFS authentication!!  The current Credential parameter only works with Windows Authentication.
 - Add a query option.  We now have the syntax for querying figured out in order to be able to document it
 - If we allow queries, then I think we need to change the way we manage the number of returned items.
 - Query syntax:

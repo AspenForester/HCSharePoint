@@ -69,10 +69,13 @@ function Get-SPListItem
         # Connect to the Sharepoint Server
         $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
 
-       if ($PSBoundParameters['Credential'])
-       {
-           $ClientContext.Credentials = New-Object System.Net.NetworkCredential($Credential.Username, $Credential.password) 
-       }
+        if ($PSBoundParameters['Credential'])
+        {
+            $ClientContext.AuthenticationMode = [Microsoft.SharePoint.Client.ClientAuthenticationMode]::FormsAuthentication
+            $FormsAuthInfo = New-Object Microsoft.SharePoint.Client.FormsAuthenticationLoginInfo($Credential.Username, $Credential.password)
+            $ClientContext.FormsAuthenticationLoginInfo = $FormsAuthInfo
+            #$ClientContext.Credentials = New-Object System.Net.NetworkCredential($Credential.Username, $Credential.password) 
+        }
 
         # Get the List
         $List = $ClientContext.Web.Lists.GetByTitle($listname)

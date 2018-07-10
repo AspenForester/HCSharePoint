@@ -74,6 +74,8 @@ function Get-SPListItem
             $ClientContext.AuthenticationMode = [Microsoft.SharePoint.Client.ClientAuthenticationMode]::FormsAuthentication
             $FormsAuthInfo = New-Object Microsoft.SharePoint.Client.FormsAuthenticationLoginInfo($Credential.Username, $Credential.password)
             $ClientContext.FormsAuthenticationLoginInfo = $FormsAuthInfo
+
+            #$ClientContext.AuthenticationMode = [Microsoft.SharePoint.Client.ClientAuthenticationMode]::Default
             #$ClientContext.Credentials = New-Object System.Net.NetworkCredential($Credential.Username, $Credential.password) 
         }
 

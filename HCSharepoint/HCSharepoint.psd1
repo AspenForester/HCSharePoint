@@ -12,7 +12,8 @@
 RootModule = 'hcsharepoint.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.1.6.0'
+ModuleVersion = '1.2.0.0'
+# go to 2.0.0.0 if the pnp code can be successfully integrated
 
 # ID used to uniquely identify this module
 GUID = 'e381041c-4df3-4482-9419-a6b80a816434'
@@ -24,7 +25,7 @@ Author = 'JB Lewis'
 CompanyName = 'Hennepin County'
 
 # Copyright statement for this module
-Copyright = '(c) 2014 Hennepin County. All rights reserved. MIT License'
+Copyright = '(c) 2018 Hennepin County. All rights reserved. MIT License'
 
 # Description of the functionality provided by this module
 Description = 'Enables interaction with SharePoint Lists'
@@ -48,10 +49,10 @@ PowerShellVersion = '3.0'
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-# RequiredModules = @()
+RequiredModules = @('SharePointPnPPowerShell2016')
 
 # Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @('bin\Microsoft.SharePoint.Client.dll','bin\Microsoft.SharePoint.Client.Runtime.dll')
+#RequiredAssemblies = @('bin\Microsoft.SharePoint.Client.dll','bin\Microsoft.SharePoint.Client.Runtime.dll')
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 #ScriptsToProcess = @()
@@ -84,7 +85,30 @@ AliasesToExport = '*'
 # FileList = @()
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess
-# PrivateData = ''
+PrivateData = @{
+
+    PSData = @{
+
+        # Tags applied to this module. These help with module discovery in online galleries.
+        # Tags = @()
+
+        # A URL to the license for this module.
+        # LicenseUri = ''
+
+        # A URL to the main website for this project.
+        # ProjectUri = ''
+
+        # A URL to an icon representing this module.
+        # IconUri = ''
+
+        # ReleaseNotes of this module
+        # ReleaseNotes = ''
+
+        ExternalModuleDependencies = @('SharePointPnPPowerShell2016')
+
+    } # End of PSData hashtable
+
+} # End of PrivateData hashtable
 
 # HelpInfo URI of this module
 # HelpInfoURI = ''

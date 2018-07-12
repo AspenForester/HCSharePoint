@@ -35,35 +35,68 @@ Function Get-SPListField
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
-        $Credential = [System.Management.Automation.PSCredential]::Empty 
+        $Credential = [System.Management.Automation.PSCredential]::Empty,
+
+        # Use ADFS Authentication
+        [Switch]
+        $UseADFS 
     )
 
-    # These are the Sharepoint common fields, someone adding a record would not want to attempt to write to one of these.
-    $exclude = ("ContentVersion","ContentTypeId", "_ModerationComments", "File_x0020_Type", "LinkTitleNoMenu",
-        "LinkTitle", "LinkTitle2", "Author", "Editor", "Modified", "Created", "ID", "ContentType",
-        "_HasCopyDestinations", "_CopySource", "owshiddenversion", "WorkflowVersion",
-        "_UIVersion", "_UIVersionString", "Attachments", "_ModerationStatus", "Edit",
-        "SelectTitle", "InstanceID", "Order", "GUID", "WorkflowInstanceID", "FileRef",
-        "FileDirRef", "Last_x0020_Modified", "Created_x0020_Date", "FSObjType",
-        "SortBehavior", "PermMask", "FileLeafRef", "UniqueId", "SyncClientId", "ProgId",
-        "ScopeId", "HTML_x0020_File_x0020_Type", "_EditMenuTableStart",
-        "_EditMenuTableStart2", "_EditMenuTableEnd", "LinkFilenameNoMenu", "LinkFilename",
-        "LinkFilename2", "DocIcon", "ServerUrl", "EncodedAbsUrl", "BaseName", "MetaInfo",
-        "_Level", "_IsCurrentVersion", "ItemChildCount", "FolderChildCount", "AppAuthor",
-        "AppEditor","Restricted")
+    Begin
+    {
+        # First we need to connect
+        try 
+        {
+            # There's a chance I might have to deal with mulitple connections...
+            # Ensure we are connected to the WebApp specified by $URI
+            $Connection = Get-PnPConnection
+            if ($Connection.url -ne $uri)
+            {
+                if ($PSBoundParameters['Credential'])
+                {
+                    $ConnectParam = @{
+                        Credentials = $Credential
+                    }
+                }
+                else
+                {
+                    $ConnectParam = @{
+                        CurrentCredentials = $true
+                    }
+                }
+                
+                $Connection = Connect-PnPOnline -ReturnConnection -Url $uri -UseAdfs:$UseADFS -ErrorAction Stop
+            }
+        }
+        catch 
+        {
+            # I might want to handle this differently in the future
+            
+            Throw $_
+        }
+    }
+    Process
+    {
+        # These are the Sharepoint common fields, someone adding a record would not want to attempt to write to one of these.
+        $exclude = ("ContentVersion", "ContentTypeId", "_ModerationComments", "File_x0020_Type", "LinkTitleNoMenu",
+            "LinkTitle", "LinkTitle2", "Author", "Editor", "Modified", "Created", "ID", "ContentType",
+            "_HasCopyDestinations", "_CopySource", "owshiddenversion", "WorkflowVersion",
+            "_UIVersion", "_UIVersionString", "Attachments", "_ModerationStatus", "Edit",
+            "SelectTitle", "InstanceID", "Order", "GUID", "WorkflowInstanceID", "FileRef",
+            "FileDirRef", "Last_x0020_Modified", "Created_x0020_Date", "FSObjType",
+            "SortBehavior", "PermMask", "FileLeafRef", "UniqueId", "SyncClientId", "ProgId",
+            "ScopeId", "HTML_x0020_File_x0020_Type", "_EditMenuTableStart",
+            "_EditMenuTableStart2", "_EditMenuTableEnd", "LinkFilenameNoMenu", "LinkFilename",
+            "LinkFilename2", "DocIcon", "ServerUrl", "EncodedAbsUrl", "BaseName", "MetaInfo",
+            "_Level", "_IsCurrentVersion", "ItemChildCount", "FolderChildCount", "AppAuthor",
+            "AppEditor", "Restricted")
 
-    $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
-
-    if ($PSBoundParameters['Credential'])
-       {
-           $ClientContext.Credentials = $Credential
-       }
+        $Lists = Get-PnPList
+        # Case Sensitive List Name
+        $CSList = ($Lists | Where Title -like $listname).Title
        
-    $List = $ClientContext.Web.Lists.GetByTitle($listname)
+        $ListFields = Get-PnPField -Identity -List $CSList 
 
-    Write-Verbose ("Retrieving the fields for list {0}" -f $listname)
-    $ClientContext.Load($List.Fields)
-    $ClientContext.ExecuteQuery()
-
-    $List.Fields.InternalName | Where-Object {$exclude -NotContains $_}
+        $ListFields.InternalName | Where-Object {$exclude -NotContains $_}
+    }
 }

@@ -31,7 +31,7 @@
 #>
 function New-SPListItem
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
         # URI of the Sharepoint site.
@@ -39,11 +39,13 @@ function New-SPListItem
             Position = 0)]
         [string]
         $uri,
+
         # Name of the List we are adding a record to
         [Parameter(Mandatory = $true,
             Position = 1)]
         [string]
         $listname,
+
         # object with properties correlating to the list's fields, each property's value will be the value of the corresponding field.
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $true,
@@ -55,51 +57,76 @@ function New-SPListItem
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
-        $Credential = [System.Management.Automation.PSCredential]::Empty 
+        $Credential = [System.Management.Automation.PSCredential]::Empty,
+
+        # Use ADFS Authentication
+        [Switch]
+        $UseADFS  
     )
     Begin
     {
-        # Get the _Case Sensitive_ fields for this list
-        $Columns = Get-SPListField -uri $uri -listname $listname 
-        
-        $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
-
-        if ($PSBoundParameters['Credential'])
+        # First we need to connect
+        try 
         {
-            $ClientContext.Credentials = $Credential
+            # There's a chance I might have to deal with mulitple connections...
+            # Ensure we are connected to the WebApp specified by $URI
+            $Connection = Get-PnPConnection
+            if ($Connection.url -ne $uri)
+            {
+                if ($PSBoundParameters['Credential'])
+                {
+                    $ConnectParam = @{
+                        Credentials = $Credential
+                    }
+                }
+                else
+                {
+                    $ConnectParam = @{
+                        CurrentCredentials = $true
+                    }
+                }
+                
+                $Connection = Connect-PnPOnline -ReturnConnection -Url $uri -UseAdfs:$UseADFS -ErrorAction Stop
+            }
         }
-        
-        $list = $ClientContext.Web.Lists.GetByTitle($listname)
+        catch 
+        {
+            # I might want to handle this differently in the future
+            
+            Throw $_
+        }
     }
     Process
     {
-        foreach ($record_item in $record)
-        {
-            $fields = $record_item.psobject.Properties.name
-            
-            $ItemCreateInfo = New-Object -TypeName Microsoft.SharePoint.Client.ListItemCreationInformation
-            $NewItem = $list.AddItem($ItemCreateInfo)
+        # Get the _Case Sensitive_ fields for this list
+        $PSBoundParameters.Remove('Record')
+        $CSColumns = Get-SPListField @PSBoundParameters
         
-            foreach ($field in $fields)
+        $RecordProps = $Record.psobject.properties
+        $RecordHash = @{}
+
+        foreach ($RecProp in $RecordProps)
+        {
+            if ($CSColumns -cnotcontains $RecProp.name)
             {
-                If (!($Columns -ccontains $field))
-                {
-                    Write-Verbose ("Correcting field input: {0}" -f $field)
-                    # Correct the field's capitalization
-                    $field = $Columns | Where-Object {$_ -eq $field}
-                    Write-Verbose ("Corrected: {0}" -f $field)
-                }
-                if ($record_item.$field -ne "")
-                {
-                    $NewItem[$field] = $record_item.$field
-                }
+                Write-Verbose ("Correcting field input: {0}" -f $RecProp.name)
+                $CorrectRecordPropertyName = $CSColumns | Where-Object {$_ -eq $RecPropName}
+                Write-Verbose ("Corrected Field input: {0} to {1}" -f $RecProp.name,$CorrectRecordPropertyName )
             }
-            Write-Verbose ("Adding new record to list {0}" -f $listname)
-            $NewItem.Update()
+            else {
+                $CorrectRecordPropertyName = $RecProp.name
+            }
+            $RecordHash[$CorrectRecordPropertyName] = $RecProp.Value
+        }
+
+        Write-Verbose ("Adding new record to list {0}" -f $listname)
+        if ($PSCmdlet.ShouldProcess("List $ListName","Add new record"))
+        {
+            Add-PnPListItem -List $CSList -Values $RecordHash
         }
     }
     End
     {
-        $ClientContext.ExecuteQuery()
+
     }
 }

@@ -49,33 +49,56 @@ function Remove-SPListItem
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
-        $Credential = [System.Management.Automation.PSCredential]::Empty 
+        $Credential = [System.Management.Automation.PSCredential]::Empty,
+
+        # Use ADFS Authentication
+        [Switch]
+        $UseADFS  
     )
     Begin
     {
-        # Load the required DLLs
-        #Add-SPCSOM
-        
-        $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
-
-        if ($PSBoundParameters['Credential'])
+        # First we need to connect
+        try 
         {
-            $ClientContext.Credentials = $Credential
+            # There's a chance I might have to deal with mulitple connections...
+            # Ensure we are connected to the WebApp specified by $URI
+            $Connection = Get-PnPConnection
+            if ($Connection.url -ne $uri)
+            {
+                if ($PSBoundParameters['Credential'])
+                {
+                    $ConnectParam = @{
+                        Credentials = $Credential
+                    }
+                }
+                else
+                {
+                    $ConnectParam = @{
+                        CurrentCredentials = $true
+                    }
+                }
+                
+                $Connection = Connect-PnPOnline -ReturnConnection -Url $uri -UseAdfs:$UseADFS -ErrorAction Stop
+            }
         }
-
-        $list = $ClientContext.Web.Lists.GetByTitle($listname)
+        catch 
+        {
+            # I might want to handle this differently in the future
+            
+            Throw $_
+        }
     }
     Process
     {
-        $ListItem = $list.getItemById($id)
+        $Lists = Get-PnPList
+        # Case Sensitive List Name
+        $CSList = ($Lists | Where-Object Title -like $listname).Title
+
         Write-Verbose ("Removing record {0}" -f $id)
-        if ($PSCmdlet.ShouldProcess($id, 'Remove Item'))
-        {
-            $ListItem.DeleteObject()
-        }
+        Remove-PnPListItem -List $CSList -Identity $id 
+        
     }
     End
     {
-        $ClientContext.ExecuteQuery()
     }
 }

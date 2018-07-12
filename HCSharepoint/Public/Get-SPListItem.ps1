@@ -58,77 +58,65 @@ function Get-SPListItem
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
-        $Credential = [System.Management.Automation.PSCredential]::Empty 
+        $Credential = [System.Management.Automation.PSCredential]::Empty,
+
+        # Use ADFS Authentication
+        [Switch]
+        $UseADFS
     )
 
     Begin
     {
+        # First we need to connect
+        try 
+        {
+            # There's a chance I might have to deal with mulitple connections...
+            # Ensure we are connected to the WebApp specified by $URI
+            $Connection = Get-PnPConnection
+            if ($Connection.url -ne $uri)
+            {
+                if ($PSBoundParameters['Credential'])
+                {
+                    $ConnectParam = @{
+                        Credentials = $Credential
+                    }
+                }
+                else {
+                    $ConnectParam = @{
+                        CurrentCredentials = $true
+                    }
+                }
+                
+                $Connection = Connect-PnPOnline -ReturnConnection -Url $uri -UseAdfs:$UseADFS -ErrorAction Stop
+            }
+        }
+        catch 
+        {
+            # I might want to handle this differently in the future
+            
+            Throw $_
+        }
     }
     Process
     {
-        # Connect to the Sharepoint Server
-        $ClientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
+        $Lists = Get-PnPList
+        # Case Sensitive List Name
+        $CSList = ($Lists | Where Title -like $listname).Title
 
-        if ($PSBoundParameters['Credential'])
+        If ($CSList)
         {
-            $ClientContext.AuthenticationMode = [Microsoft.SharePoint.Client.ClientAuthenticationMode]::FormsAuthentication
-            $FormsAuthInfo = New-Object Microsoft.SharePoint.Client.FormsAuthenticationLoginInfo($Credential.Username, $Credential.password)
-            $ClientContext.FormsAuthenticationLoginInfo = $FormsAuthInfo
-
-            #$ClientContext.AuthenticationMode = [Microsoft.SharePoint.Client.ClientAuthenticationMode]::Default
-            #$ClientContext.Credentials = New-Object System.Net.NetworkCredential($Credential.Username, $Credential.password) 
-        }
-
-        # Get the List
-        $List = $ClientContext.Web.Lists.GetByTitle($listname)
- 
-        If ($SizeLimit -ne 0)
-        {
-            Write-Verbose ('Only retrieving {0} records' -f $SizeLimit)
-            $Query = [Microsoft.SharePoint.Client.CamlQuery]::CreateAllItemsQuery($SizeLimit)
-        }
-        else
-        {
-            Write-Verbose "Retrieving all records"
-            $Query = [Microsoft.SharePoint.Client.CamlQuery]::CreateAllItemsQuery()
-        }
-		
-        $Items = $List.GetItems($Query)
-
-        $ClientContext.Load($Items)
-
-        # Error handling!
-        Try
-        {
-            $ErrorActionPreference = "Stop"
-            $ClientContext.ExecuteQuery()
-        }
-        Catch
-        {
-            Write-Error $_.Exception.Message
-        }
-        Finally
-        {
-            $ErrorActionPreference = "Continue"
-        }
-
-        foreach ($Item in $Items) 
-        { 
-            <#
-            $obj = New-Object -TypeName psobject 
-            # Convert the hash table / dictionary object to a custom object
-            foreach ($i in $Item.FieldValues) 
+            $Items = Get-PnPListItem -List $CSList
+        
+            # Convert the Fieldvalues Dictionary items into a PSCustomObject
+            foreach ($Item in $Items) 
             { 
-                foreach ($key in $i.keys) 
-                {
-                    Add-Member -InputObject $obj -NotePropertyName $key -NotePropertyValue $i.Item($key)
-                }
+                $obj = [pscustomobject]([hashtable]$Item.FieldValues)
+                $obj.psobject.TypeNames.Insert(0, "HC.Sharepoint.List.$listname")
+                $obj
             }
-            $obj.psobject.TypeNames.Insert(0, "HC.Sharepoint.List.$listname")
-            #>
-            $obj = [pscustomobject]([hashtable]$Item.FieldValues)
-            $obj.psobject.TypeNames.Insert(0, "HC.Sharepoint.List.$listname")
-            $obj
+        }
+        else {
+            Throw "Could not find list: $listname"
         }
     }
     End

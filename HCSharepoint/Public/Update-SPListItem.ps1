@@ -55,8 +55,7 @@ function Update-SPListItem
         # Record ID
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            ParameterSetName = "Single",
-            Position = 2)]
+            ParameterSetName = "Single")]
         [int]
         $id,
 
@@ -84,26 +83,54 @@ function Update-SPListItem
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
-        $Credential = [System.Management.Automation.PSCredential]::Empty 
+        $Credential = [System.Management.Automation.PSCredential]::Empty,
+
+        # Use ADFS Authentication
+        [Switch]
+        $UseADFS   
     )
 
     Begin
     {
-        # Get the _Case Sensitive_ fields for this list
-        $Columns = Get-SPListField -uri $uri -listname $listname        
-        
-        $clientContext = New-Object -TypeName Microsoft.SharePoint.Client.ClientContext($uri)
-
-        if ($PSBoundParameters['Credential'])
+        # First we need to connect
+        try 
         {
-            $ClientContext.Credentials = $Credential
+            # There's a chance I might have to deal with mulitple connections...
+            # Ensure we are connected to the WebApp specified by $URI
+            $Connection = Get-PnPConnection
+            if ($Connection.url -ne $uri)
+            {
+                if ($PSBoundParameters['Credential'])
+                {
+                    $ConnectParam = @{
+                        Credentials = $Credential
+                    }
+                }
+                else
+                {
+                    $ConnectParam = @{
+                        CurrentCredentials = $true
+                    }
+                }
+                
+                $Connection = Connect-PnPOnline -ReturnConnection -Url $uri -UseAdfs:$UseADFS -ErrorAction Stop
+            }
         }
-
-        $list = $ClientContext.Web.Lists.GetByTitle($listname)
-
+        catch 
+        {
+            # I might want to handle this differently in the future
+            
+            Throw $_
+        }
     }
     Process
     {
+        $Lists = Get-PnPList
+        # Case Sensitive List Name
+        $CSList = ($Lists | Where Title -like $listname).Title
+        
+        $Columns = Get-SPListField -uri $uri -listname $CSList
+        
         Write-Verbose "Parameter Set $($pscmdlet.ParameterSetName)"
         
         switch ($pscmdlet.ParameterSetName)
@@ -124,7 +151,8 @@ function Update-SPListItem
                     }
                 } 
                 $hash = @{}
-                foreach ($pair in $fields.psobject.properties)
+                $FieldsExceptID = $fields.psobject.properties | where Name -ne 'ID'
+                foreach ($pair in $FieldsExceptID)
                 { 
                     # Only include the user Columns in the hash table
                     if ($Columns -contains $pair.Name)
@@ -139,35 +167,35 @@ function Update-SPListItem
             }
         }
 
-        # Get the List Item
-        $listitem = $list.GetItemById($id)
-
         # Loop through the items in the hash table and update the hashtable that is $listitem
-        foreach ($key in $hash.Keys)
+        foreach ($Pair in $hash)
         {
             # Sharepoint is case sensitive - correct the case mismatch
-            If (!($Columns -ccontains $key))
+            if ($Pair.Key -cnotin $Columns)
             {
-                Write-Verbose ("Correcting field input: {0}" -f $key)
+                Write-Verbose ("Correcting field input: {0}" -f $Pair.key)
                 # Correct the field's (key's) capitalization
-                $key = $Columns | Where-Object {$_ -eq $key}
+                $key = $Columns | Where-Object {$_ -eq $Pair.key}
+                # Get the value of the pair
+                $value = $hash[$key]
+                # Delete the pair
+                $hash.remove($key)
+                # Recreate the pair with Case-correct key
+                $hash[$Key] = $value
                 Write-Verbose ("Corrected: {0}" -f $key)
             }
-             
-            Write-Verbose ("Updating Record {0}, Field {1} with {2}" -f $id, $key, $value)   
-            $listitem[$key] = $hash[$key]
+            # Need to end up with a hashtable with Case-corrected keys
+
+            # Write-Verbose ("Updating Record {0}, Field {1} with {2}" -f $id, $key, $value)   
         }
 
         # Update the sharepoint object in memory
-        $listitem.Update()
+        if ($pscmdlet.ShouldProcess("List $CSList", "Update Record $id"))
+        {
+            Set-PnPListItem -List $CSList -Identity $id -Values $hash
+        }
     }
     End
     {
-        # Commit the changes back to the Sharepoint server
-        if ($pscmdlet.ShouldProcess("Item $id", "Update"))
-        {
-            Write-Verbose ("Committing update to Record {0}" -f $id)
-            $ClientContext.ExecuteQuery()
-        }
     }
 }

@@ -73,20 +73,19 @@ function New-SPListItem
             $Connection = Get-PnPConnection
             if ($Connection.url -ne $uri)
             {
-                if ($PSBoundParameters['Credential'])
-                {
-                    $ConnectParam = @{
-                        Credentials = $Credential
-                    }
+                $ConnectParam = @{
+                    URI = $uri
                 }
-                else
+                If ($PSBoundParameters['Credential'])
                 {
-                    $ConnectParam = @{
-                        CurrentCredentials = $true
-                    }
+                    $ConnectParam.Add('Credential',$Credential)
+
                 }
-                
-                $Connection = Connect-PnPOnline -ReturnConnection -Url $uri -UseAdfs:$UseADFS -ErrorAction Stop
+                if ($PSBoundParameters['UseADFS']) 
+                {
+                    $ConnectParam.Add('UseADFS',$UseADFS)
+                }
+                Connect-SPWebApp @ConnectParam -ErrorAction Stop
             }
         }
         catch 

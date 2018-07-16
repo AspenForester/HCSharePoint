@@ -32,7 +32,7 @@
 #>
 function Connect-SPWebApp
 {
-    [CmdletBinding(DefaultParameterSetName = "CurrentCredentials")]
+    [CmdletBinding(DefaultParameterSetName = 'CurrentCredentials')]
     [Alias()]
     [OutputType([SharePointPnP.PowerShell.Commands.Base.SPOnlineConnection])]
     Param (
@@ -47,25 +47,25 @@ function Connect-SPWebApp
         $URL,
         
         # Param2 help description
-        [Parameter(Mandatory= $true,
+        [Parameter(Mandatory= $False,
             ParameterSetName = 'CurrentCredentials')]
         [switch]
         $UseCurrentCredentials,
         
         # Credential
         [Parameter(Mandatory = $true,
-            ParameterSetName = 'Credentials')]
+            ParameterSetName = 'UserProvided')]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
         
         # Use ADFS authentication with the provided credentials
-        [Parameter(ParameterSetName = 'Credentials')]
+        [Parameter(ParameterSetName = 'UserProvided')]
         [Switch]
         $UseADFS,
 
         # Ignore SSL Errors - Use with Caution!
-        [Parameter(AttributeValues)]
+        [Parameter()]
         [Switch]
         $IgnoreSSLErrors
     )

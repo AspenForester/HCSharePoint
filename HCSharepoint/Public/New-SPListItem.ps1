@@ -97,9 +97,12 @@ function New-SPListItem
     }
     Process
     {
+        # Case Sensitive List Name
+        $CSList = ($Script:Lists | Where-Object Title -like $listname).Title
+        
         # Get the _Case Sensitive_ fields for this list
-        $PSBoundParameters.Remove('Record')
-        $CSColumns = Get-SPListField @PSBoundParameters
+        #$PSBoundParameters.Remove('Record')
+        $CSColumns = Get-SPListField -uri $uri -listname $CSList
         
         $RecordProps = $Record.psobject.properties
         $RecordHash = @{}

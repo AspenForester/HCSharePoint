@@ -77,7 +77,7 @@ function Connect-SPWebApp
     process
     {
         # Parameter Sets
-        if ($pscmdlet.ParameterSetName = 'CurrentCredentials')
+        if ($pscmdlet.ParameterSetName -eq 'CurrentCredentials')
         {
             $ConnectParam = @{
                 URL = $URL
@@ -93,7 +93,12 @@ function Connect-SPWebApp
             }
         }
 
-        Connect-PnPOnline @ConnectParam -UseAdfs:$UseADFS -IgnoreSslErrors:$IgnoreSSLErrors
+        $Connection = Connect-PnPOnline @ConnectParam -UseAdfs:$UseADFS -IgnoreSslErrors:$IgnoreSSLErrors
+
+        $Lists = Get-PnPList 
+        $Script:Lists = $lists
+
+        $Connection
     }
     
     end

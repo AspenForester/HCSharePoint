@@ -56,6 +56,7 @@ function Update-SPListItem
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
             ParameterSetName = "Single")]
+        [Parameter(ParameterSetName = 'Multi')]
         [int]
         $id,
 
@@ -95,52 +96,60 @@ function Update-SPListItem
         # First we need to connect
         try 
         {
-            # There's a chance I might have to deal with mulitple connections...
-            # Ensure we are connected to the WebApp specified by $URI
-            $Connection = Get-PnPConnection
-            if ($Connection.url -ne $uri)
+            if (-not ($Script:Lists))
             {
-                $ConnectParam = @{
-                    URI = $uri
-                }
-                If ($PSBoundParameters['Credential'])
+                # There's a chance I might have to deal with mulitple connections...
+                # Ensure we are connected to the WebApp specified by $URI
+                $Connection = Get-PnPConnection
+                if ($Connection.url -ne $uri)
                 {
-                    $ConnectParam.Add('Credential',$Credential)
+                    $ConnectParam = @{
+                        URI = $uri
+                    }
+                    If ($PSBoundParameters['Credential'])
+                    {
+                        $ConnectParam.Add('Credential', $Credential)
 
+                    }
+                    if ($PSBoundParameters['UseADFS']) 
+                    {
+                        $ConnectParam.Add('UseADFS', $UseADFS)
+                    }
+                    Connect-SPWebApp @ConnectParam -ErrorAction Stop
                 }
-                if ($PSBoundParameters['UseADFS']) 
-                {
-                    $ConnectParam.Add('UseADFS',$UseADFS)
-                }
-                Connect-SPWebApp @ConnectParam -ErrorAction Stop
             }
         }
         catch 
         {
             # I might want to handle this differently in the future
-            
             Throw $_
         }
     }
     Process
     {
-        $Lists = Get-PnPList
         # Case Sensitive List Name
-        $CSList = ($Lists | Where Title -like $listname).Title
+        $CSList = ($Script:Lists | Where-Object Title -like $listname).Title
         
-        $Columns = Get-SPListField -uri $uri -listname $CSList
+        $CSColumns = Get-SPListField -uri $uri -listname $CSList
         
         Write-Verbose "Parameter Set $($pscmdlet.ParameterSetName)"
-        
         switch ($pscmdlet.ParameterSetName)
         {
             "Multi"
             {
                 #Make sure we have the record ID
-                if (!($id)) # We didn't get the ID as a stand alone parameter
+                if (-not ($PSBoundParameters['id'])) # We didn't get the ID as a stand alone parameter
                 {
+                    Write-Verbose "Did not receive id value from parameter"
                     # Test for the existence of an id property in the input object
-                    if (-not $fields.psobject.properties -contains "id")
+                    if ($VerbosePreference -eq 'Continue')
+                    {
+                        Foreach ($item in $fields.psobject.properties )
+                        {
+                            Write-Verbose ("{0} : {1}" -f $item.Name, $item.Value)
+                        }
+                    }
+                    if ("id" -notin $fields.psobject.properties.name)
                     {
                         throw "No ID value was provided, unable to determine which record to update!"
                     }
@@ -154,7 +163,8 @@ function Update-SPListItem
                 foreach ($pair in $FieldsExceptID)
                 { 
                     # Only include the user Columns in the hash table
-                    if ($Columns -contains $pair.Name)
+                    # Don't try to edit something a user isn't suppposed to change
+                    if ($CSColumns -contains $pair.Name)
                     { 
                         $hash[$pair.Name] = $pair.Value
                     }  
@@ -165,33 +175,32 @@ function Update-SPListItem
                 $hash = @{$field = $value}
             }
         }
-
+        $ReplacementHash = @{}
         # Loop through the items in the hash table and update the hashtable that is $listitem
-        foreach ($Pair in $hash)
+        foreach ($Key in $hash.keys)
         {
             # Sharepoint is case sensitive - correct the case mismatch
-            if ($Pair.Key -cnotin $Columns)
+            if ($Key -cnotin $CSColumns)
             {
-                Write-Verbose ("Correcting field input: {0}" -f $Pair.key)
+                Write-Verbose ("Correcting field input: {0}" -f $key)
                 # Correct the field's (key's) capitalization
-                $key = $Columns | Where-Object {$_ -eq $Pair.key}
-                # Get the value of the pair
-                $value = $hash[$key]
-                # Delete the pair
-                $hash.remove($key)
-                # Recreate the pair with Case-correct key
-                $hash[$Key] = $value
-                Write-Verbose ("Corrected: {0}" -f $key)
+                $CSkey = $CSColumns | Where-Object {$_ -eq $key}
+                # Add the pair to the replacement hash
+                $ReplacementHash.Add($CSkey, $hash.$key)
+
+                Write-Verbose ("Corrected to: {0}" -f $CSkey)
             }
             # Need to end up with a hashtable with Case-corrected keys
-
+            else {
+                $ReplacementHash.Add($key, $hash.$key)
+            }
             # Write-Verbose ("Updating Record {0}, Field {1} with {2}" -f $id, $key, $value)   
         }
 
         # Update the sharepoint object in memory
         if ($pscmdlet.ShouldProcess("List $CSList", "Update Record $id"))
         {
-            Set-PnPListItem -List $CSList -Identity $id -Values $hash
+            Set-PnPListItem -List $CSList -Identity $id -Values $ReplacementHash
         }
     }
     End

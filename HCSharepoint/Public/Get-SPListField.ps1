@@ -47,24 +47,27 @@ Function Get-SPListField
         # First we need to connect
         try 
         {
-            # There's a chance I might have to deal with mulitple connections...
-            # Ensure we are connected to the WebApp specified by $URI
-            $Connection = Get-PnPConnection
-            if ($Connection.url -ne $uri)
+            if (-not ($Script:Lists))
             {
-                $ConnectParam = @{
-                    URI = $uri
-                }
-                If ($PSBoundParameters['Credential'])
+                # There's a chance I might have to deal with mulitple connections...
+                # Ensure we are connected to the WebApp specified by $URI
+                $Connection = Get-PnPConnection -ErrorAction SilentlyContinue
+                if ($Connection.url -ne $uri)
                 {
-                    $ConnectParam.Add('Credential',$Credential)
+                    $ConnectParam = @{
+                        URI = $uri
+                    }
+                    If ($PSBoundParameters['Credential'])
+                    {
+                        $ConnectParam.Add('Credential', $Credential)
 
+                    }
+                    if ($PSBoundParameters['UseADFS']) 
+                    {
+                        $ConnectParam.Add('UseADFS', $UseADFS)
+                    }
+                    Connect-SPWebApp @ConnectParam -ErrorAction Stop
                 }
-                if ($PSBoundParameters['UseADFS']) 
-                {
-                    $ConnectParam.Add('UseADFS',$UseADFS)
-                }
-                Connect-SPWebApp @ConnectParam -ErrorAction Stop
             }
         }
         catch 
@@ -91,11 +94,11 @@ Function Get-SPListField
             "AppEditor", "Restricted")
 
         # Connection information is held as a Script Scope variable!
-        $Lists = Get-PnPList
+        #$Lists = Get-PnPList
         # Case Sensitive List Name
-        $CSList = ($Lists | Where-Object Title -like $listname).Title
+        $CSList = ($Script:Lists | Where-Object Title -like $listname).Title
        
-        $ListFields = Get-PnPField -Identity -List $CSList 
+        $ListFields = Get-PnPField -List $CSList 
 
         $ListFields.InternalName | Where-Object {$exclude -NotContains $_}
     }

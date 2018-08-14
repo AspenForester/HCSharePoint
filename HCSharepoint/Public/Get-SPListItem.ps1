@@ -99,13 +99,20 @@ function Get-SPListItem
     }
     Process
     {
-        $Lists = Get-PnPList
+        #$Lists = Get-PnPList
         # Case Sensitive List Name
-        $CSList = ($Lists | Where Title -like $listname).Title
+        $CSList = ($Script:Lists | Where-Object Title -like $listname).Title
 
         If ($CSList)
         {
-            $Items = Get-PnPListItem -List $CSList
+            if ($PSBoundParameters['SizeLimit'] -and $SizeLimit -gt 0)
+            {
+                $Items = Get-PnPListItem -List $CSList | Select-Object -First $SizeLimit
+            }
+            else {
+                $Items = Get-PnPListItem -List $CSList 
+            }
+            
         
             # Convert the Fieldvalues Dictionary items into a PSCustomObject
             foreach ($Item in $Items) 

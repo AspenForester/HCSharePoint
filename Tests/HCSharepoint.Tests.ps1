@@ -9,6 +9,12 @@ InModuleScope "HCSharepoint" {
     $ListName = 'PrintFaxServices'
     $knownRecords = 78
 
+    Describe "Connect-SPWebApp" {
+        It "Returns a connection context" {
+            $result = Connect-SPWebApp -URL $URI 
+            $result.Url | should be $URI
+        }
+    }
     Describe "Get-SPListItem" {
         Context 'Example 1: Get all records of list' {
             $list = hcsharepoint\Get-SPListItem -uri $URI -listname $ListName

@@ -94,7 +94,7 @@ function Remove-SPListItem
         $CSList = ($Lists | Where-Object Title -like $listname).Title
 
         Write-Verbose ("Removing record {0}" -f $id)
-        Remove-PnPListItem -List $CSList -Identity $id 
+        Remove-PnPListItem -List $CSList -Identity $id -Confirm:$confirm
         
     }
     End
